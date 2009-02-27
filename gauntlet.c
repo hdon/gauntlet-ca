@@ -25,6 +25,11 @@ typedef struct arrow_s {
 int safe(char map[MAPH][MAPW], int x, int y, int toggle);
 int bomb(char map[MAPH][MAPW], int plyx, int plyy);
 void opendoor(char map[MAPH][MAPW], int x, int y);
+static void audio_callback(void *data, Uint8 *buf, int len);
+
+/* audio */
+SDL_AudioSpec audio;
+int freq = 0;
 
 int main(int argc, char * argv[])
 {
@@ -59,6 +64,17 @@ int main(int argc, char * argv[])
     fprintf(stderr, "Error opening video: %s\n", SDL_GetError());
     exit(1);
   }
+
+  audio.freq = 22050;
+  audio.samples = 512; /* very small buffer! */
+  audio.channels = 0; /* mono sound */
+  audio.format = AUDIO_S8;
+  audio.callback = audio_callback;
+  if (SDL_OpenAudio(&audio, NULL)) {
+    fprintf(stderr, "Error opening audio: %s\n", SDL_GetError());
+    exit(1);
+  }
+  SDL_PauseAudio(0);
 
   fi = fopen("map.txt", "r");
   if (fi == NULL)
@@ -149,7 +165,10 @@ int main(int argc, char * argv[])
           key_right = 0;
         else if (key == SDLK_SPACE)
           key_fire = 0;
-       }
+      }
+      else if (event.type == SDL_QUIT) {
+        done = 1;
+      }
     }
 
     got = -1;
@@ -194,6 +213,7 @@ int main(int argc, char * argv[])
       {
         if (key_up)
         {
+          freq = 280;
           if ((key_left == 0 && key_right == 0) || (toggle % 2) == 0)
           {
             got = safe(map, plyx, plyy - 1, toggle);
@@ -203,6 +223,7 @@ int main(int argc, char * argv[])
         }
         else if (key_down)
         {
+          freq = 200;
           if ((key_left == 0 && key_right == 0) || (toggle % 2) == 0)
           {
             got = safe(map, plyx, plyy + 1, toggle);
@@ -213,6 +234,7 @@ int main(int argc, char * argv[])
 
         if (key_left)
         {
+          freq = 255;
           if ((key_up == 0 && key_down == 0) || (toggle % 2) == 1)
           {
             got = safe(map, plyx - 1, plyy, toggle);
@@ -222,6 +244,7 @@ int main(int argc, char * argv[])
         }
         else if (key_right)
         {
+          freq = 268;
           if ((key_up == 0 && key_down == 0) || (toggle % 2) == 1)
           {
             got = safe(map, plyx + 1, plyy, toggle);
@@ -630,5 +653,27 @@ void opendoor(char map[MAPH][MAPW], int x, int y)
     }
   }
   while (!done);
+}
+
+static void audio_callback(void *data, Uint8 *buf, int len) {
+  static int counter = 0;
+  int i, ex, ex2;
+  if (freq == 0) {
+    for (i=0; i<len; i++)
+      buf[i] = audio.silence;
+    return;
+  }
+
+  /* calculate wave length */
+  ex = (int) (1.0 / freq * 22050);
+  ex2 = ex * 2;
+  for (i=0; i<len; i++) {
+    if (counter >= ex2) counter = 0;
+    if (counter > ex)
+      buf[i] = 255;
+    else
+      buf[i] = 0;
+    counter++;
+  }
 }
 
