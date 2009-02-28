@@ -52,16 +52,17 @@ int main(int argc, char * argv[])
   int oldkey_up, oldkey_down, oldkey_left, oldkey_right;
   arrow_t arrows[MAXARROWS];
 
-  if (SDL_Init(SDL_INIT_VIDEO) < 0)
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
   {
     fprintf(stderr, "Error init'ing SDL: %s\n", SDL_GetError());
     exit(1);
   }
 
-  screen = SDL_SetVideoMode(SCREENW, SCREENH, 0, 0);
+  screen = SDL_SetVideoMode(SCREENW, SCREENH, 0, SDL_FULLSCREEN);
   if (screen == NULL)
   {
     fprintf(stderr, "Error opening video: %s\n", SDL_GetError());
+    SDL_Quit();
     exit(1);
   }
 
@@ -72,6 +73,7 @@ int main(int argc, char * argv[])
   audio.callback = audio_callback;
   if (SDL_OpenAudio(&audio, NULL)) {
     fprintf(stderr, "Error opening audio: %s\n", SDL_GetError());
+    SDL_Quit();
     exit(1);
   }
   SDL_PauseAudio(0);
@@ -185,8 +187,10 @@ int main(int argc, char * argv[])
         {
           for (i = 0; i < MAXARROWS && found == -1; i++)
           {
-            if (arrows[i].alive == 0)
+            if (arrows[i].alive == 0) {
               found = i;
+              break;
+            }
           }
         }
 
