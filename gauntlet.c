@@ -283,7 +283,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx, plyy - 1, toggle);
             if (got != -1) {
-              make_noise(280.0, 200);
+              make_noise(280.0, 800);
               plyy--;
             }
           }
@@ -294,7 +294,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx, plyy + 1, toggle);
             if (got != -1) {
-              make_noise(200.0, 200);
+              make_noise(200.0, 800);
               plyy++;
             }
           }
@@ -306,7 +306,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx - 1, plyy, toggle);
             if (got != -1) {
-              make_noise(255.0, 200);
+              make_noise(255.0, 800);
               plyx--;
             }
           }
@@ -317,7 +317,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx + 1, plyy, toggle);
             if (got != -1) {
-              make_noise(268.0, 200);
+              make_noise(268.0, 800);
               plyx++;
             }
           }

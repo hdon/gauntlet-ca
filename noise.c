@@ -61,7 +61,7 @@ void noise_callback(void *data, Uint8 *buf, int len) {
     /* fill sample buffer */
     for (i=0; i<fill; i++) {
       phase += 1.0;
-      buf[i] = 50 + (int)(50.0 * sin(phase * freq));
+      buf[i] += 50 + (int)(50.0 * sin(phase * freq));
     }
   }
 
