@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "SDL.h"
 #include "SDL_image.h"
+#include "noise.h"
 
 #define SCREENW 640
 #define SCREENH 480
@@ -26,7 +27,6 @@ typedef struct arrow_s {
 int safe(char map[MAPH][MAPW], int x, int y, int toggle);
 int bomb(char map[MAPH][MAPW], int plyx, int plyy);
 void opendoor(char map[MAPH][MAPW], int x, int y);
-static void audio_callback(void *data, Uint8 *buf, int len);
 SDL_Surface * loadimage(char * fname);
 void drawimage(SDL_Surface * screen, SDL_Surface * sheet, int tilew, int tileh, int tilex, int tiley, int x, int y);
 
@@ -79,8 +79,8 @@ int main(int argc, char * argv[])
   audio.freq = 22050;
   audio.samples = 512; /* very small buffer! */
   audio.channels = 0; /* mono sound */
-  audio.format = AUDIO_S8;
-  audio.callback = audio_callback;
+  audio.format = AUDIO_U8;
+  audio.callback = noise_callback;
   if (SDL_OpenAudio(&audio, NULL)) {
     fprintf(stderr, "Error opening audio: %s\n", SDL_GetError());
     SDL_Quit();
@@ -283,7 +283,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx, plyy - 1, toggle);
             if (got != -1) {
-              freq = 280;
+              make_noise(280.0, 200);
               plyy--;
             }
           }
@@ -294,7 +294,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx, plyy + 1, toggle);
             if (got != -1) {
-              freq = 200;
+              make_noise(200.0, 200);
               plyy++;
             }
           }
@@ -306,7 +306,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx - 1, plyy, toggle);
             if (got != -1) {
-              freq = 255;
+              make_noise(255.0, 200);
               plyx--;
             }
           }
@@ -317,7 +317,7 @@ int main(int argc, char * argv[])
           {
             got = safe(map, plyx + 1, plyy, toggle);
             if (got != -1) {
-              freq = 268;
+              make_noise(268.0, 200);
               plyx++;
             }
           }
@@ -933,6 +933,7 @@ void drawimage(SDL_Surface * screen, SDL_Surface * sheet, int tilew, int tileh, 
   SDL_BlitSurface(sheet, &src, screen, &dest);
 }
 
+#if 0
 static void audio_callback(void *data, Uint8 *buf, int len) {
   static int counter = 0;
   int i, ex, ex2;
@@ -948,10 +949,11 @@ static void audio_callback(void *data, Uint8 *buf, int len) {
   for (i=0; i<len; i++) {
     if (counter >= ex2) counter = 0;
     if (counter > ex)
-      buf[i] = 255;
+      buf[i] = 140;
     else
       buf[i] = 0;
     counter++;
   }
 }
+#endif
 

@@ -7,7 +7,9 @@ typedef struct {
   Uint16 time;
 } TNoise;
 
+void make_noise(float freq, int duration);
 void noise_play(TNoise * n);
+void noise_callback(void *data, Uint8 *buf, int len);
 
 #endif
 

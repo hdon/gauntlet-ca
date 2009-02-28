@@ -14,7 +14,7 @@ all:	gauntlet
 clean:
 	rm -f *.o gauntlet
 
-gauntlet: gauntlet.o
+gauntlet: gauntlet.o noise.o
 	$(CC) -o $@ $^ $(SDL_LIBS)
 
 
