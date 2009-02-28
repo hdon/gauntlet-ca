@@ -12,11 +12,9 @@ CFLAGS=-Wall -O2 $(SDL_CFLAGS) -ggdb3
 all:	gauntlet
 
 clean:
-	-rm gauntlet
-	-rm *.o
+	rm -f *.o gauntlet
 
-gauntlet:	gauntlet.o
-	$(CC) -o gauntlet gauntlet.o $(SDL_LIBS)
+gauntlet: gauntlet.o
+	$(CC) -o $@ $^ $(SDL_LIBS)
 
-gauntlet.o:	gauntlet.c
 
